@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Adel](https://up.htmlacademy.ru/ecmascript/12/user/776991).
-* Наставник: `Неизвестно`.
+* Наставник: `Без наставника`.
 
 ---
 
