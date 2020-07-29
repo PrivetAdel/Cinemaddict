@@ -17,7 +17,7 @@ const createUserRankTemplate = () => {
       <p class="profile__rating">Movie Buff</p>
       <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
     </section>`
-  )
+  );
 };
 
 const createMenuTemplate = () => {
@@ -31,7 +31,7 @@ const createMenuTemplate = () => {
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
     </nav>`
-  )
+  );
 };
 
 const createSortTemplate = () => {
@@ -41,7 +41,7 @@ const createSortTemplate = () => {
       <li><a href="#" class="sort__button">Sort by date</a></li>
       <li><a href="#" class="sort__button">Sort by rating</a></li>
     </ul>`
-  )
+  );
 };
 
 const createContentTemplate = () => {
@@ -53,7 +53,7 @@ const createContentTemplate = () => {
         </div>
       </section>
     </section>`
-  )
+  );
 };
 
 const createFilmCardTemplate = () => {
@@ -75,13 +75,13 @@ const createFilmCardTemplate = () => {
         <button class="film-card__controls-item button film-card__controls-item--favorite film-card__controls-item--active">Mark as favorite</button>
       </form>
     </article>`
-  )
+  );
 };
 
 const createShowMoreButtonTemplate = () => {
   return (
     `<button class="films-list__show-more">Show more</button>`
-  )
+  );
 };
 
 const createFilmDetalisPopupTemplate = () => {
@@ -255,7 +255,7 @@ const createFilmDetalisPopupTemplate = () => {
         </div>
       </form>
     </section>`
-  )
+  );
 };
 
 const createTopRatedTemplate = () => {
@@ -265,7 +265,7 @@ const createTopRatedTemplate = () => {
       <div class="films-list__container">
       </div>
     </section>`
-  )
+  );
 };
 
 const createMostCommentedTemplate = () => {
@@ -275,13 +275,13 @@ const createMostCommentedTemplate = () => {
       <div class="films-list__container">
       </div>
     </section>`
-  )
+  );
 };
 
 const createMoviesCountTemplate = () => {
   return (
     `<p>130 291 movies inside</p>`
-  )
+  );
 };
 
 render(mainHeaderElement, createUserRankTemplate());
@@ -305,10 +305,10 @@ render(footerStatistics, createMoviesCountTemplate());
 const filmsListContainersElement = mainElement.querySelectorAll(`.films-list__container`);
 for (let i = 0; i < CARDS_COUNT; i++) {
   render(filmsListContainersElement[0], createFilmCardTemplate());
-};
+}
 for (let i = 0; i < EXTRA_CARDS_COUNT; i++) {
   render(filmsListContainersElement[1], createFilmCardTemplate());
-};
+}
 for (let i = 0; i < EXTRA_CARDS_COUNT; i++) {
   render(filmsListContainersElement[2], createFilmCardTemplate());
-};
+}
