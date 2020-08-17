@@ -15,3 +15,25 @@ export const getRandomArray = (array) => {
   const newArray = shuffleArray(array.slice()).slice(0, items);
   return newArray;
 };
+
+export const render = (container, element, place = `beforeend`) => {
+  switch (place) {
+    case `afterbegin`:
+      container.prepend(element);
+      break;
+    case `beforeend`:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place = `beforeend`) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
