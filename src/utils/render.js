@@ -16,6 +16,9 @@ export const render = (container, child, place = `beforeend`) => {
     case `beforeend`:
       container.append(child);
       break;
+    case `before`:
+      container.before(child);
+      break;
   }
 };
 
