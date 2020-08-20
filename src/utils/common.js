@@ -15,3 +15,11 @@ export const getRandomArray = (array) => {
   const newArray = shuffleArray(array.slice()).slice(0, items);
   return newArray;
 };
+
+export const sortFilmDate = (filmA, filmB) => {
+  return filmB.releaseDate.getFullYear() - filmA.releaseDate.getFullYear();
+};
+
+export const sortFilmRating = (filmA, filmB) => {
+  return filmB.rating - filmA.rating;
+};
