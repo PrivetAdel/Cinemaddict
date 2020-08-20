@@ -1,9 +1,9 @@
-import {createElement} from '../utils';
+import AbstractView from './abstract';
 
-export default class MoviesCount {
+export default class MoviesCount extends AbstractView {
   constructor(count) {
+    super();
     this._count = count;
-    this._element = null;
   }
 
   _createMoviesCountTemplate(count) {
@@ -14,17 +14,5 @@ export default class MoviesCount {
 
   getTemplate() {
     return this._createMoviesCountTemplate(this._count);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

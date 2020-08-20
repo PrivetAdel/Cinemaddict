@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import AbstractView from './abstract';
 
 const createGenresTemplate = (genres) => {
   return `<td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
@@ -28,10 +28,11 @@ const generateReleaseDateTemplate = (releaseDate) => {
   return releaseDate.toLocaleString(`en-US`, {dateStyle: `long`});
 };
 
-export default class FilmDetalis {
+export default class FilmDetalis extends AbstractView {
   constructor(card) {
+    super();
     this._card = card;
-    this._element = null;
+    this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
   }
 
   _createFilmDetalisPopupTemplate(card) {
@@ -163,15 +164,13 @@ export default class FilmDetalis {
     return this._createFilmDetalisPopupTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _closeButtonClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseButtonClickHandler(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
   }
 }

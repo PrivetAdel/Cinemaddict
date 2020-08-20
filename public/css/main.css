@@ -335,6 +335,11 @@ button {
   margin-right: 0.5em;
 }
 
+.film-card__title:hover,
+.film-card__poster:hover {
+  cursor: pointer;
+}
+
 .film-card__rating,
 .film-card__rating--good {
   color: var(--text-color-good);

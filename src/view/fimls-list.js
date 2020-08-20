@@ -1,35 +1,17 @@
-import {createElement} from '../utils';
+import AbstractView from './abstract';
 
-export default class FilmsList {
-  constructor() {
-    this._element = null;
-  }
-
-  _createContentTemplate() {
+export default class FilmsList extends AbstractView {
+  _createFilmsListTemplate() {
     return (
-      `<section class="films">
-        <section class="films-list">
+      `<section class="films-list">
           <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
           <div class="films-list__container">
           </div>
-        </section>
-      </section>`
+        </section>`
     );
   }
 
   getTemplate() {
-    return this._createContentTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return this._createFilmsListTemplate();
   }
 }

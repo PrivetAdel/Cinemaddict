@@ -1,10 +1,6 @@
-import {createElement} from '../utils';
+import AbstractView from './abstract';
 
-export default class TopRated {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TopRated extends AbstractView {
   _createTopRatedTemplate() {
     return (
       `<section class="films-list--extra">
@@ -17,17 +13,5 @@ export default class TopRated {
 
   getTemplate() {
     return this._createTopRatedTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
