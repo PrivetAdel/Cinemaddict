@@ -1,4 +1,5 @@
-import {getRandomInteger, getRandomArray} from '../utils/common';
+import {getRandomInteger, getRandomArray, generateId} from '../utils/common';
+import {createComments} from './comments';
 
 const generateName = () => {
   const names = [
@@ -59,63 +60,9 @@ const generateGenres = () => {
   return getRandomArray(genres);
 };
 
-const generateCommentsText = () => {
-  const commentsText = [
-    `Interesting setting and a good cast`,
-    `Booooooooooring`,
-    `Very very old. Meh`,
-    `Aliquam id orci ut lectus varius viverra`,
-    `Almost two hours? Seriously?`,
-    `Aliquam erat volutpat`,
-    `Nunc fermentum tortor ac porta dapibus`,
-    `In rutrum ac purus sit amet tempus`
-  ];
-  const randomIndex = getRandomInteger(0, commentsText.length - 1);
-  return commentsText[randomIndex];
-};
-
-const generateCommentsEmoji = () => {
-  const commentsEmoji = [
-    `angry`,
-    `puke`,
-    `sleeping`,
-    `smile`
-  ];
-  const randomIndex = getRandomInteger(0, commentsEmoji.length - 1);
-  return commentsEmoji[randomIndex];
-};
-
-const generateCommentsAuthor = () => {
-  const commentsAuthor = [
-    `Tom Ford`,
-    `Leonardo DiCaprio`,
-    `Tom Hardy`,
-    `John Travolta`,
-    `Bruce Willis`,
-    `Quentin Tarantino`,
-    `Russell Crowe`,
-    `Joaquin Phoenix`
-  ];
-  const randomIndex = getRandomInteger(0, commentsAuthor.length - 1);
-  return commentsAuthor[randomIndex];
-};
-
-const createCommentDate = () => {
-  const commentDate = new Date();
-  return commentDate.toLocaleString(`en-US`, {day: `numeric`, month: `long`, year: `numeric`});
-};
-
-const createComments = () => {
-  return {
-    text: generateCommentsText(),
-    emoji: generateCommentsEmoji(),
-    author: generateCommentsAuthor(),
-    date: createCommentDate()
-  };
-};
-
 export const generateFilmCard = () => {
   return {
+    id: generateId(),
     title: generateName(),
     originalTitle: ``,
     poster: generatePoster(),
@@ -128,7 +75,7 @@ export const generateFilmCard = () => {
     runtime: `1h 30m`,
     country: `USA`,
     genres: generateGenres(),
-    comments: new Array(getRandomInteger(0, 5)).fill(``).map(createComments),
+    comments: createComments(),
     isFavorite: !!getRandomInteger(0, 1),
     isWatched: !!getRandomInteger(0, 1),
     isWatchlist: !!getRandomInteger(0, 1)
