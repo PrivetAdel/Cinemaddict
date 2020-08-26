@@ -1,4 +1,4 @@
-import AbstractView from './abstract';
+import SmartView from './smart';
 
 const createGenresTemplate = (genres) => {
   return `<td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
@@ -7,38 +7,24 @@ const createGenresTemplate = (genres) => {
   </td>`;
 };
 
-const createCommentsTemplate = (comments) => {
-  return comments.map((comment) => `<li class="film-details__comment">
-    <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
-    </span>
-    <div>
-      <p class="film-details__comment-text">${comment.text}</p>
-      <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${comment.date}</span>
-        <button class="film-details__comment-delete">Delete</button>
-      </p>
-    </div>
-  </li>`
-  ).join(``);
-};
-
 const generateReleaseDateTemplate = (releaseDate) => {
   return releaseDate.toLocaleString(`en-US`, {dateStyle: `long`});
 };
 
-export default class FilmDetalis extends AbstractView {
-  constructor(card) {
+export default class FilmDetalis extends SmartView {
+  constructor(film) {
     super();
-    this._card = card;
+    this._data = FilmDetalis.parseFilmToData(film);
+
     this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
+    this._changeControlHandler = this._changeControlHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
-  _createFilmDetalisPopupTemplate(card) {
-    const {title, description, comments, poster, rating, runtime, releaseDate, genres, director, writers, actors, country, isFavorite, isWatched, isWatchlist} = card;
+  _createFilmDetalisPopupTemplate(film) {
+    const {title, description, comments, poster, rating, runtime, releaseDate, genres, director, writers, actors, country, isWatchlist, isWatched, isFavorite} = film;
 
-    const commentsTemplate = createCommentsTemplate(comments);
     const releaseDateTemplate = generateReleaseDateTemplate(releaseDate);
     const genresTemplate = createGenresTemplate(genres);
 
@@ -103,14 +89,11 @@ export default class FilmDetalis extends AbstractView {
                 </p>
               </div>
             </div>
-
             <section class="film-details__controls">
               <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${isWatchlist ? `checked` : ``}>
               <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
-
               <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${isWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
-
               <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${isFavorite ? `checked` : ``}>
               <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
             </section>
@@ -119,40 +102,7 @@ export default class FilmDetalis extends AbstractView {
           <div class="form-details__bottom-container">
             <section class="film-details__comments-wrap">
               <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-
-              <ul class="film-details__comments-list">
-                ${commentsTemplate}
-              </ul>
-
-              <div class="film-details__new-comment">
-                <div for="add-emoji" class="film-details__add-emoji-label"></div>
-
-                <label class="film-details__comment-label">
-                  <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-                </label>
-
-                <div class="film-details__emoji-list">
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                  <label class="film-details__emoji-label" for="emoji-smile">
-                    <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                  </label>
-
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                  <label class="film-details__emoji-label" for="emoji-sleeping">
-                    <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                  </label>
-
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                  <label class="film-details__emoji-label" for="emoji-puke">
-                    <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                  </label>
-
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                  <label class="film-details__emoji-label" for="emoji-angry">
-                    <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                  </label>
-                </div>
-              </div>
+              <ul class="film-details__comments-list"></ul>
             </section>
           </div>
         </form>
@@ -161,16 +111,61 @@ export default class FilmDetalis extends AbstractView {
   }
 
   getTemplate() {
-    return this._createFilmDetalisPopupTemplate(this._card);
+    return this._createFilmDetalisPopupTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
   }
 
   _closeButtonClickHandler(evt) {
     evt.preventDefault();
-    this._callback.closeButtonClick();
+    this._callback.closeButtonClick(FilmDetalis.parseDataToFilm(this._data));
   }
 
   setCloseButtonClickHandler(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
+  }
+
+  reset(film) {
+    this.updateData(
+        FilmDetalis.parseFilmToData(film)
+    );
+  }
+
+  _changeControlHandler(evt) {
+    if (evt.target.classList.contains(`film-details__control-input`)) {
+      evt.preventDefault();
+
+      let update;
+      switch (evt.target.id) {
+        case `watchlist`:
+          update = {isWatchlist: !this._data.isWatchlist};
+          break;
+        case `watched`:
+          update = {isWatched: !this._data.isWatched};
+          break;
+        case `favorite`:
+          update = {isFavorite: !this._data.isFavorite};
+          break;
+      }
+      this.updateData(update, true);
+    }
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.film-details__controls`).addEventListener(`change`, this._changeControlHandler);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign({}, film);
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    return data;
   }
 }

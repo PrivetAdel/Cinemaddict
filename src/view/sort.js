@@ -7,7 +7,7 @@ export default class Sort extends AbstractView {
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
-  _createSortTemplate() {
+  getTemplate() {
     return (
       `<ul class="sort">
         <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
@@ -17,8 +17,9 @@ export default class Sort extends AbstractView {
     );
   }
 
-  getTemplate() {
-    return this._createSortTemplate();
+  _changeActiveClass(target) {
+    this.getElement().querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
+    target.classList.add(`sort__button--active`);
   }
 
   _sortTypeChangeHandler(evt) {
@@ -27,6 +28,7 @@ export default class Sort extends AbstractView {
     }
 
     evt.preventDefault();
+    this._changeActiveClass(evt.target);
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
