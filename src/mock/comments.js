@@ -1,4 +1,4 @@
-import {getRandomInteger, generateId} from '../utils/common';
+import {getRandomInteger, generateId, getCommentDate} from '../utils/common';
 
 const generateCommentsText = () => {
   const commentsText = [
@@ -42,8 +42,7 @@ const generateCommentsAuthor = () => {
 };
 
 const createCommentDate = () => {
-  const commentDate = new Date();
-  return commentDate.toLocaleString(`en-US`, {day: `numeric`, month: `long`, year: `numeric`});
+  return new Date();
 };
 
 const createComment = () => {
@@ -52,7 +51,7 @@ const createComment = () => {
     text: generateCommentsText(),
     emoji: generateCommentsEmoji(),
     author: generateCommentsAuthor(),
-    date: createCommentDate()
+    date: getCommentDate(createCommentDate())
   };
 };
 

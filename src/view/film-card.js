@@ -1,4 +1,5 @@
 import AbstractView from './abstract';
+import {getReleaseDate} from '../utils/common';
 
 const MAX_SIMBOLS_COUNT = 140;
 
@@ -9,10 +10,6 @@ const generateDescriptionTemplate = (description) => {
   } else {
     return description;
   }
-};
-
-const generateReleaseDateTemplate = (releaseDate) => {
-  return releaseDate.getFullYear();
 };
 
 export default class FilmCard extends AbstractView {
@@ -29,7 +26,7 @@ export default class FilmCard extends AbstractView {
     const {title, poster, description, comments, rating, runtime, releaseDate, genres, isFavorite, isWatched, isWatchlist} = film;
 
     const descriptionTemplate = generateDescriptionTemplate(description);
-    const releaseDateTemplate = generateReleaseDateTemplate(releaseDate);
+    const releaseDateTemplate = getReleaseDate(releaseDate);
 
     const favoriteClassName = isFavorite ? `film-card__controls-item--active` : ``;
     const watchedClassName = isWatched ? `film-card__controls-item--active` : ``;

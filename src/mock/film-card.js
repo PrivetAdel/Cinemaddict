@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArray, generateId} from '../utils/common';
+import {getRandomInteger, getRandomArray, generateId, getDurationFormat} from '../utils/common';
 import {createComments} from './comments';
 
 const generateName = () => {
@@ -72,7 +72,7 @@ export const generateFilmCard = () => {
     writers: [`Anne Wigton`, `Heinz Herald`, `Richard Weil`],
     actors: [`Erich von Stroheim`, `Mary Beth Hughes`, `Dan Duryea`],
     releaseDate: new Date(),
-    runtime: `1h 30m`,
+    runtime: getDurationFormat(getRandomInteger(10, 150)),
     country: `USA`,
     genres: generateGenres(),
     comments: createComments(),
