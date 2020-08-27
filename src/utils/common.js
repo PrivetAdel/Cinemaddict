@@ -1,4 +1,26 @@
+import moment from 'moment';
+
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+export const getDurationFormat = (minutes) => {
+  const duration = moment.duration(minutes, `minutes`);
+  const hours = `${duration.hours() > 0 ? `${duration.hours()}h` : ``}`;
+  const mins = `${duration.minutes() > 0 ? `${duration.minutes()}m` : ``}`;
+
+  return `${hours} ${mins}`;
+};
+
+export const getReleaseDate = (date, isFullDate = false) => {
+  if (isFullDate) {
+    return moment(date).format(`DD MMMM YYYY`);
+  } else {
+    return moment(date).format(`YYYY`);
+  }
+};
+
+export const getCommentDate = (date) => {
+  return moment(date).fromNow();
+};
 
 export const getRandomInteger = (min, max) => {
   return Math.floor((Math.random() * (max + 1 - min)) + min);

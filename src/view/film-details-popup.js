@@ -1,14 +1,11 @@
 import SmartView from './smart';
+import {getReleaseDate} from '../utils/common';
 
 const createGenresTemplate = (genres) => {
   return `<td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
   <td class="film-details__cell">
     ${genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(``)}
   </td>`;
-};
-
-const generateReleaseDateTemplate = (releaseDate) => {
-  return releaseDate.toLocaleString(`en-US`, {dateStyle: `long`});
 };
 
 export default class FilmDetalis extends SmartView {
@@ -25,7 +22,7 @@ export default class FilmDetalis extends SmartView {
   _createFilmDetalisPopupTemplate(film) {
     const {title, description, comments, poster, rating, runtime, releaseDate, genres, director, writers, actors, country, isWatchlist, isWatched, isFavorite} = film;
 
-    const releaseDateTemplate = generateReleaseDateTemplate(releaseDate);
+    const releaseDateTemplate = getReleaseDate(releaseDate, true);
     const genresTemplate = createGenresTemplate(genres);
 
     return (
