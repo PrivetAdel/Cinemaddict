@@ -56,10 +56,31 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error(`Can remove only components`);
   }
 
   component.getElement().remove();
   component.removeElement();
+};
+
+export const append = (parent, child) => {
+  if (parent instanceof Abstract) {
+    parent = parent.getElement();
+  }
+
+  if (child instanceof Abstract) {
+    child = child.getElement();
+  }
+
+  if (parent === null || child === null) {
+    throw new Error(`Can't append unexisting elements`);
+  }
+
+
+  parent.appendChild(child);
 };

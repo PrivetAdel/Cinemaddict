@@ -1,22 +1,21 @@
 import FilmCardView from '../view/film-card';
 import FilmDetalisView from '../view/film-details-popup';
-import CommentsView from '../view/comments';
-import NewCommentView from '../view/new-comment';
+import CommentsModel from '../model/comments';
+import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
-
-const Mode = {
-  DEFAULT: `DEFAULT`,
-  POPUP: `POPUP`
-};
+import {Mode, UserAction, UpdateType} from '../const';
 
 export default class Film {
-  constructor(filmsListContainer, changeData, changeMode) {
+  constructor(filmsListContainer, changeData, changeMode, filmsModel) {
     this._filmsListContainer = filmsListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._filmsModel = filmsModel;
+    this._commentsModel = new CommentsModel();
 
     this._filmComponent = null;
     this._filmDetalisComponent = null;
+    this._commentPresenter = null;
     this._mode = Mode.DEFAULT;
 
     this._handleCardClick = this._handleCardClick.bind(this);
@@ -25,10 +24,13 @@ export default class Film {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDetailsCloseClick = this._handleDetailsCloseClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+
+    this._handleCommentListUpdate = this._handleCommentListUpdate.bind(this);
   }
 
   init(film) {
     this._film = film;
+    this._commentsModel.setComments(this._film.comments);
 
     const prevFilmComponent = this._filmComponent;
     const prevFilmDetalisComponent = this._filmDetalisComponent;
@@ -60,20 +62,13 @@ export default class Film {
     remove(prevFilmDetalisComponent);
   }
 
-  _renderComments(comments) {
-    return comments.map((comment) => {
-      render(this._commentsConteiner, new CommentsView(comment));
-    }).join(``);
-  }
-
   _initDetailsCard() {
     this._filmDetalisComponent = new FilmDetalisView(this._film);
     this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
     this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
 
-
-    this._renderComments(this._film.comments);
-    render(this._newCommentConteiner, new NewCommentView());
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel);
+    this._commentListPresenter.init(this._film.comments);
   }
 
   destroy() {
@@ -108,8 +103,24 @@ export default class Film {
     }
   }
 
+  _handleCommentListUpdate() {
+    this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.PATCH,
+        Object.assign(
+            {},
+            this._film,
+            {
+              comments: this._commentsModel.getComments()
+            }
+        )
+    );
+  }
+
   _handleAddToWatchListClick() {
     this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -122,6 +133,8 @@ export default class Film {
 
   _handleWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -134,6 +147,8 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -148,8 +163,8 @@ export default class Film {
     this._replaceCardToDetails();
   }
 
-  _handleDetailsCloseClick(film) {
-    this._changeData(film);
+  _handleDetailsCloseClick(update) {
+    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.PATCH, update);
     this._replaceDetailsToCard();
   }
 }

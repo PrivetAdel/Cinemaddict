@@ -1,4 +1,5 @@
 import SmartView from './smart';
+import {generateId, getCommentDate} from '../utils/common';
 
 export default class NewComment extends SmartView {
   constructor(film) {
@@ -8,14 +9,16 @@ export default class NewComment extends SmartView {
     this._commentInputHandler = this._commentInputHandler.bind(this);
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
 
+    this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
+
     this._setInnerHandlers();
   }
 
   _createCommentsSectionTemplate() {
-    const {emotion} = this._data;
+    const {emoji} = this._data;
     return `<div class="film-details__new-comment">
-        <div for="add-emoji" class="film-details__add-emoji-label">
-          ${emotion ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : ``}
+        <div class="film-details__add-emoji-label">
+          ${emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : ``}
         </div>
 
         <label class="film-details__comment-label">
@@ -23,22 +26,22 @@ export default class NewComment extends SmartView {
         </label>
 
         <div class="film-details__emoji-list">
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emotion === `smile` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emoji === `smile` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-smile">
             <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emotion === `sleeping` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emoji === `sleeping` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-sleeping">
             <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emotion === `puke` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emoji === `puke` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-puke">
             <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emotion === `angry` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emoji === `angry` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-angry">
             <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
           </label>
@@ -50,8 +53,21 @@ export default class NewComment extends SmartView {
     return this._createCommentsSectionTemplate(this._data);
   }
 
+  getNewComment() {
+    return Object.assign(
+        {},
+        this._data,
+        {
+          id: generateId(),
+          author: `Privet Adel`,
+          date: getCommentDate(new Date())
+        }
+    );
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
+    this.getElement().addEventListener(`keydown`, this._commentSubmitHandler);
   }
 
   _setInnerHandlers() {
@@ -69,8 +85,20 @@ export default class NewComment extends SmartView {
   _emojiClickHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      emotion: evt.target.value
+      emoji: evt.target.value
     });
+  }
+
+  _commentSubmitHandler(evt) {
+    if (evt.ctrlKey && evt.key === `Enter`) {
+      evt.preventDefault();
+      this._callback.submitComment();
+    }
+  }
+
+  setSubmitCommentHandler(callback) {
+    this._callback.submitComment = callback;
+    this.getElement().addEventListener(`keydown`, this._commentSubmitHandler);
   }
 
   static parseFilmToData(film) {
@@ -80,7 +108,7 @@ export default class NewComment extends SmartView {
   static parseDataToFilm(data) {
     data = Object.assign({}, data);
 
-    delete data.emotion;
+    delete data.emoji;
 
     return data;
   }

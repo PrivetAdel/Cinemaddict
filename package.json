@@ -21,6 +21,7 @@
     "node": "10"
   },
   "dependencies": {
+    "he": "1.2.0",
     "moment": "2.27.0"
   }
 }
