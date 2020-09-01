@@ -52,16 +52,11 @@ export const sortFilmCommentsCount = (filmA, filmB) => {
   return filmB.comments.length - filmA.comments.length;
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+export const CARDS_COUNT_PER_STEP = 5;
+export const EXTRA_CARDS_COUNT = 2;
 
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
+export const FilmsType = {
+  ALL: `ALL`,
+  RATED: `RATED`,
+  COMMENTED: `COMMENTED`
 };

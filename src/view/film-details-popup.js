@@ -87,8 +87,8 @@ export default class FilmDetalis extends SmartView {
               </div>
             </div>
             <section class="film-details__controls">
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${isWatchlist ? `checked` : ``}>
-              <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="addwatchlist" name="watchlist" ${isWatchlist ? `checked` : ``}>
+              <label for="addwatchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
               <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${isWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
               <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${isFavorite ? `checked` : ``}>
@@ -138,7 +138,7 @@ export default class FilmDetalis extends SmartView {
 
       let update;
       switch (evt.target.id) {
-        case `watchlist`:
+        case `addwatchlist`:
           update = {isWatchlist: !this._data.isWatchlist};
           break;
         case `watched`:
