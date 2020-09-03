@@ -13,11 +13,13 @@ export default class Comment {
 
   init(comment) {
     this._comment = comment;
+
     this._commentComponent = new CommentsView(this._comment);
 
     this._commentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
 
     render(this._commentsContainer, this._commentComponent);
+
   }
 
   destroy() {

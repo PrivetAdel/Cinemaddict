@@ -70,22 +70,12 @@ export default class FilmList {
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.resetView());
-    Object
-      .values(this._ratedFilmPresenter)
-      .forEach((presenter) => presenter.resetView());
-    Object
-      .values(this._commentedFilmPresenter)
-      .forEach((presenter) => presenter.resetView());
   }
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM_CARD:
-        this._filmsModel.updateFilmCard(updateType, update);
-        break;
       case UserAction.ADD_COMMENT:
-        this._filmsModel.updateFilmCard(updateType, update);
-        break;
       case UserAction.DELETE_COMMENT:
         this._filmsModel.updateFilmCard(updateType, update);
         break;
@@ -200,12 +190,6 @@ export default class FilmList {
       this._currentSortType = SortType.DEFAULT;
     }
   }
-
-  // _renderFilmsExtra() {
-  //   this._renderFilms(this._topRatedFilmsListElement, this._filmsTopRated, 0, EXTRA_CARDS_COUNT, FilmsType.RATED);
-  //
-  //   this._renderFilms(this._mostCommentedFilmsListElement, this._filmsMostCommented, 0, EXTRA_CARDS_COUNT, FilmsType.COMMENTED);
-  // }
 
   _renderFilmList() {
     const films = this._getFilms();

@@ -15,7 +15,7 @@ export default class Film {
 
     this._filmComponent = null;
     this._filmDetalisComponent = null;
-    this._commentPresenter = null;
+    this._commentListPresenter = null;
     this._mode = Mode.DEFAULT;
 
     this._handleCardClick = this._handleCardClick.bind(this);
@@ -36,7 +36,7 @@ export default class Film {
     const prevFilmDetalisComponent = this._filmDetalisComponent;
 
     this._filmComponent = new FilmCardView(film);
-    this._initDetailsCard();
+    this._filmDetalisComponent = new FilmDetalisView(film);
 
     this._filmComponent.setFilmCardClickHandler(this._handleCardClick);
     this._filmComponent.setAddtoWatchClickHandler(this._handleAddToWatchListClick);
@@ -50,25 +50,15 @@ export default class Film {
       return;
     }
 
-    if (this._mode === Mode.DEFAULT) {
-      replace(this._filmComponent, prevFilmComponent);
+    if (prevFilmDetalisComponent !== null) {
+      this._initCommentSection();
     }
 
-    if (this._mode === Mode.POPUP) {
-      replace(this._filmDetalisComponent, prevFilmDetalisComponent);
-    }
+    replace(this._filmComponent, prevFilmComponent);
+    replace(this._filmDetalisComponent, prevFilmDetalisComponent);
 
     remove(prevFilmComponent);
     remove(prevFilmDetalisComponent);
-  }
-
-  _initDetailsCard() {
-    this._filmDetalisComponent = new FilmDetalisView(this._film);
-    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
-    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
-
-    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel);
-    this._commentListPresenter.init(this._film.comments);
   }
 
   destroy() {
@@ -78,19 +68,32 @@ export default class Film {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._replaceDetailsToCard();
+      this._closeDetailsCard();
     }
   }
 
-  _replaceCardToDetails() {
-    replace(this._filmDetalisComponent, this._filmComponent);
+  _initCommentSection() {
+    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
+    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
+
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel);
+    this._commentListPresenter.init(this._film.comments);
+  }
+
+  _openDetailsCard() {
+    render(this._filmsListContainer, this._filmDetalisComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.POPUP;
+
+    this._initCommentSection();
+
+    this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
+    this._filmDetalisComponent.restoreHandlers();
   }
 
-  _replaceDetailsToCard() {
-    replace(this._filmComponent, this._filmDetalisComponent);
+  _closeDetailsCard() {
+    remove(this._filmDetalisComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
@@ -99,21 +102,15 @@ export default class Film {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this._filmDetalisComponent.reset(this._film);
-      this._replaceDetailsToCard();
+      this._closeDetailsCard();
     }
   }
 
-  _handleCommentListUpdate() {
+  _handleCommentListUpdate(userAction, updateType, update) {
     this._changeData(
-        UserAction.UPDATE_FILM_CARD,
-        UpdateType.PATCH,
-        Object.assign(
-            {},
-            this._film,
-            {
-              comments: this._commentsModel.getComments()
-            }
-        )
+        userAction,
+        updateType,
+        update
     );
   }
 
@@ -160,11 +157,11 @@ export default class Film {
   }
 
   _handleCardClick() {
-    this._replaceCardToDetails();
+    this._openDetailsCard();
   }
 
   _handleDetailsCloseClick(update) {
     this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.PATCH, update);
-    this._replaceDetailsToCard();
+    this._closeDetailsCard();
   }
 }
