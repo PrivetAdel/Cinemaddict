@@ -1,12 +1,15 @@
 import AbstractView from './abstract';
+import {PageMode} from '../const';
 
 export default class Menu extends AbstractView {
-  constructor(filters, currentFilterType) {
+  constructor(filters, currentFilterType, pageMode) {
     super();
     this._filters = filters;
     this._currentFilterType = currentFilterType;
+    this._pageMode = pageMode;
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._statisticsClickHandler = this._statisticsClickHandler.bind(this);
   }
 
   _createFilterTemplate(filter) {
@@ -25,7 +28,7 @@ export default class Menu extends AbstractView {
         <div class="main-navigation__items">
           ${filtersTemplate}
         </div>
-        <a href="#stats" class="main-navigation__additional">Stats</a>
+        <a href="#stats" class="main-navigation__additional ${this._pageMode === PageMode.STATISTICS ? `main-navigation__additional--active` : ``}">Stats</a>
       </nav>`
     );
   }
@@ -41,6 +44,16 @@ export default class Menu extends AbstractView {
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
+    this.getElement().querySelector(`.main-navigation__items`).addEventListener(`click`, this._filterTypeChangeHandler);
+  }
+
+  _statisticsClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.statisticsClick();
+  }
+
+  setStatisticsClickHandler(callback) {
+    this._callback.statisticsClick = callback;
+    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._statisticsClickHandler);
   }
 }

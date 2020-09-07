@@ -6,8 +6,8 @@ import SortView from '../view/sort';
 import NoFilmsView from '../view/no-films';
 import FilmPresenter from './film';
 import {render, remove} from '../utils/render';
-import {sortFilmDate, sortFilmRating, FilmsType, CARDS_COUNT_PER_STEP} from '../utils/common';
-import {SortType, UpdateType, UserAction} from '../const';
+import {sortFilmDate, sortFilmRating} from '../utils/common';
+import {CARDS_COUNT_PER_STEP, SortType, UpdateType, UserAction, FilmsType} from '../const';
 import {filter} from '../utils/filter';
 
 export default class FilmList {
@@ -24,9 +24,6 @@ export default class FilmList {
     this._filmsListComponent = new FilmsListView();
     this._topRatedComponent = new TopRatedView();
     this._mostCommentedComponent = new MostCommentedView();
-    this._filmsListElement = this._filmsListComponent.getElement().querySelector(`.films-list__container`);
-    this._topRatedFilmsListElement = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
-    this._mostCommentedFilmsListElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
     this._noFilmsComponent = new NoFilmsView();
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -36,19 +33,40 @@ export default class FilmList {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handlerShowMoreButtonClick = this._handlerShowMoreButtonClick.bind(this);
     this._handlerSortTypeChange = this._handlerSortTypeChange.bind(this);
-
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
+    this._filmsListElement = this._filmsListComponent.getElement().querySelector(`.films-list__container`);
+    this._topRatedFilmsListElement = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
+    this._mostCommentedFilmsListElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
+
     render(this._filmsListContainer, this._filmsListComponent);
+
     if (this._filmsModel.getFilms().length !== 0) {
       render(this._filmsListContainer, this._topRatedComponent);
       render(this._filmsListContainer, this._mostCommentedComponent);
     }
 
     this._renderFilmList();
+
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+  }
+
+  destroy() {
+    this._clearFilmList({resetRenderedFilmsCount: true, resetSortType: true});
+
+    remove(this._filmsListComponent);
+    remove(this._topRatedComponent);
+    remove(this._mostCommentedComponent);
+
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  hidden() {
+    this._filmsListContainer.classList.add(`visually-hidden`);
+    this._sortComponent.getElement().classList.add(`visually-hidden`);
   }
 
   _getFilms() {
@@ -70,22 +88,12 @@ export default class FilmList {
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.resetView());
-    Object
-      .values(this._ratedFilmPresenter)
-      .forEach((presenter) => presenter.resetView());
-    Object
-      .values(this._commentedFilmPresenter)
-      .forEach((presenter) => presenter.resetView());
   }
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM_CARD:
-        this._filmsModel.updateFilmCard(updateType, update);
-        break;
       case UserAction.ADD_COMMENT:
-        this._filmsModel.updateFilmCard(updateType, update);
-        break;
       case UserAction.DELETE_COMMENT:
         this._filmsModel.updateFilmCard(updateType, update);
         break;
@@ -131,6 +139,7 @@ export default class FilmList {
   _renderFilm(container, film, type) {
     const filmPresenter = new FilmPresenter(container, this._handleViewAction, this._handleModeChange, this._filmsModel, this._commentsModel);
     filmPresenter.init(film);
+
     switch (type) {
       case FilmsType.ALL:
         this._filmPresenter[film.id] = filmPresenter;
@@ -200,12 +209,6 @@ export default class FilmList {
       this._currentSortType = SortType.DEFAULT;
     }
   }
-
-  // _renderFilmsExtra() {
-  //   this._renderFilms(this._topRatedFilmsListElement, this._filmsTopRated, 0, EXTRA_CARDS_COUNT, FilmsType.RATED);
-  //
-  //   this._renderFilms(this._mostCommentedFilmsListElement, this._filmsMostCommented, 0, EXTRA_CARDS_COUNT, FilmsType.COMMENTED);
-  // }
 
   _renderFilmList() {
     const films = this._getFilms();

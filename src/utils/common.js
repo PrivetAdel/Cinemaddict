@@ -2,6 +2,13 @@ import moment from 'moment';
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
+export const getCurrentDate = () => {
+  const currentDate = new Date();
+  currentDate.setHours(23, 59, 59, 999);
+
+  return new Date(currentDate);
+};
+
 export const getDurationFormat = (minutes) => {
   const duration = moment.duration(minutes, `minutes`);
   const hours = `${duration.hours() > 0 ? `${duration.hours()}h` : ``}`;
@@ -40,6 +47,56 @@ export const getRandomArray = (array) => {
   return newArray;
 };
 
+export const getWatchedFilmsCount = (films) => {
+  return films.filter((film) => film.isWatched).length;
+};
+
+export const getProfileRating = (films) => {
+  const watchedFilmsCount = getWatchedFilmsCount(films);
+
+  switch (true) {
+    case (watchedFilmsCount >= 1 && watchedFilmsCount <= 10):
+      return `novice`;
+    case (watchedFilmsCount >= 11 && watchedFilmsCount <= 20):
+      return `fan`;
+    case (watchedFilmsCount >= 21):
+      return `movie buff`;
+    default:
+      return ``;
+  }
+};
+
+export const getFilmsDuration = (films) => {
+  return films.reduce((count, film) => {
+    return count + film.runtime;
+  }, 0);
+};
+
+export const getAllGenres = (films) => {
+  const allGenres = [];
+  films.map((film) => allGenres.push(film.genres));
+
+  const countObject = allGenres.flat().reduce((a, c) => {
+    a[c] = a[c] || 0;
+    a[c]++;
+    return a;
+  }, {});
+
+  return countObject;
+};
+
+export const getTopGenre = (films) => {
+  const genresObject = getAllGenres(films);
+
+  const maxCount = Math.max(...Object.values(genresObject));
+
+  const topGenre = ((obj, value) => {
+    return Object.keys(obj)[Object.values(obj).indexOf(value)];
+  });
+
+  return topGenre(genresObject, maxCount);
+};
+
 export const sortFilmDate = (filmA, filmB) => {
   return filmB.releaseDate.getFullYear() - filmA.releaseDate.getFullYear();
 };
@@ -50,13 +107,4 @@ export const sortFilmRating = (filmA, filmB) => {
 
 export const sortFilmCommentsCount = (filmA, filmB) => {
   return filmB.comments.length - filmA.comments.length;
-};
-
-export const CARDS_COUNT_PER_STEP = 5;
-export const EXTRA_CARDS_COUNT = 2;
-
-export const FilmsType = {
-  ALL: `ALL`,
-  RATED: `RATED`,
-  COMMENTED: `COMMENTED`
 };

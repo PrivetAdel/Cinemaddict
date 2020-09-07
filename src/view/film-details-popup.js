@@ -1,5 +1,5 @@
 import SmartView from './smart';
-import {getReleaseDate} from '../utils/common';
+import {getReleaseDate, getDurationFormat} from '../utils/common';
 
 const createGenresTemplate = (genres) => {
   return `<td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
@@ -24,6 +24,7 @@ export default class FilmDetalis extends SmartView {
 
     const releaseDateTemplate = getReleaseDate(releaseDate, true);
     const genresTemplate = createGenresTemplate(genres);
+    const runtimeTemplate = getDurationFormat(runtime);
 
     return (
       `<section class="film-details">
@@ -70,7 +71,7 @@ export default class FilmDetalis extends SmartView {
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Runtime</td>
-                    <td class="film-details__cell">${runtime}</td>
+                    <td class="film-details__cell">${runtimeTemplate}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Country</td>
@@ -118,7 +119,7 @@ export default class FilmDetalis extends SmartView {
 
   _closeButtonClickHandler(evt) {
     evt.preventDefault();
-    this._callback.closeButtonClick(FilmDetalis.parseDataToFilm(this._data));
+    this._callback.closeButtonClick();
   }
 
   setCloseButtonClickHandler(callback) {
@@ -126,10 +127,8 @@ export default class FilmDetalis extends SmartView {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
   }
 
-  reset(film) {
-    this.updateData(
-        FilmDetalis.parseFilmToData(film)
-    );
+  destroy() {
+    return FilmDetalis.parseDataToFilm(this._data);
   }
 
   _changeControlHandler(evt) {
