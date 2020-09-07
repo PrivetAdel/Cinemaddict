@@ -42,7 +42,12 @@ const generateCommentsAuthor = () => {
 };
 
 const createCommentDate = () => {
-  return new Date();
+  const start = new Date(2010, 0, 1, 23, 59, 59, 999);
+  const currentDate = new Date();
+
+  const date = start.getTime() + Math.random() * (currentDate.getTime() - start.getTime());
+
+  return new Date(date);
 };
 
 const createComment = () => {

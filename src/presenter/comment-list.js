@@ -1,7 +1,7 @@
 import CommentPresenter from './comment';
 import NewCommentView from '../view/new-comment';
 import {UserAction, UpdateType} from '../const';
-import {render} from '../utils/render';
+import {render, remove} from '../utils/render';
 
 export default class CommentList {
   constructor(commentsContainer, newCommentConteiner, film, changeCommentData, commentsModel) {
@@ -23,6 +23,15 @@ export default class CommentList {
     this._newCommentComponent = new NewCommentView();
     render(this._newCommentConteiner, this._newCommentComponent);
     this._newCommentComponent.setSubmitCommentHandler(this._handleCommentSubmit);
+  }
+
+  destroy() {
+    remove(this._newCommentComponent);
+
+    Object
+        .values(this._commentPresenter)
+        .forEach((presenter) => presenter.destroy());
+    this._commentPresenter = {};
   }
 
   _handleCommentDeleteClick(userAction, updateType, update) {

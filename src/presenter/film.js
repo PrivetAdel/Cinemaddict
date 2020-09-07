@@ -26,6 +26,8 @@ export default class Film {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
 
     this._handleCommentListUpdate = this._handleCommentListUpdate.bind(this);
+
+    this._destroyCallback = null;
   }
 
   init(film) {
@@ -61,15 +63,24 @@ export default class Film {
     remove(prevFilmDetalisComponent);
   }
 
+
   destroy() {
     remove(this._filmComponent);
-    remove(this._filmDetalisComponent);
+    this._destroyDetailsComponent();
   }
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._closeDetailsCard();
     }
+  }
+
+  _destroyDetailsComponent() {
+    const updateCard = this._filmDetalisComponent.destroy();
+
+    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.PATCH, updateCard);
+
+    remove(this._filmDetalisComponent);
   }
 
   _initCommentSection() {
@@ -86,22 +97,25 @@ export default class Film {
     this._changeMode();
     this._mode = Mode.POPUP;
 
-    this._initCommentSection();
+    if (!this._commentListPresenter) {
+      this._initCommentSection();
+    }
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
     this._filmDetalisComponent.restoreHandlers();
   }
 
   _closeDetailsCard() {
-    remove(this._filmDetalisComponent);
+    this._destroyDetailsComponent();
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._commentListPresenter.destroy();
+    this._commentListPresenter = null;
     this._mode = Mode.DEFAULT;
   }
 
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._filmDetalisComponent.reset(this._film);
       this._closeDetailsCard();
     }
   }
@@ -160,8 +174,7 @@ export default class Film {
     this._openDetailsCard();
   }
 
-  _handleDetailsCloseClick(update) {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.PATCH, update);
+  _handleDetailsCloseClick() {
     this._closeDetailsCard();
   }
 }

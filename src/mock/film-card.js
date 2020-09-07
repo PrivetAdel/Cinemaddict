@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArray, generateId, getDurationFormat} from '../utils/common';
+import {getRandomInteger, getRandomArray, generateId} from '../utils/common';
 import {createComments} from './comments';
 
 const generateName = () => {
@@ -55,12 +55,28 @@ const generateGenres = () => {
     `Drama`,
     `Film-Noir`,
     `Mystery`,
-    `Cartoon`
+    `Cartoon`,
+    `Sci-Fi`,
+    `Animation`,
+    `Fantasy`,
+    `Comedy`,
+    `TV Series`
   ];
   return getRandomArray(genres);
 };
 
+export const generateDate = () => {
+  const start = new Date(2019, 0, 1);
+  const currentDate = new Date();
+
+  const date = start.getTime() + Math.random() * (currentDate.getTime() - start.getTime());
+
+  return new Date(date);
+};
+
 export const generateFilmCard = () => {
+  const isWatchedFilm = !!getRandomInteger(0, 1);
+  const watchingFilmDate = isWatchedFilm ? generateDate() : ``;
   return {
     id: generateId(),
     title: generateName(),
@@ -71,13 +87,14 @@ export const generateFilmCard = () => {
     director: `Anthony Mann`,
     writers: [`Anne Wigton`, `Heinz Herald`, `Richard Weil`],
     actors: [`Erich von Stroheim`, `Mary Beth Hughes`, `Dan Duryea`],
-    releaseDate: new Date(),
-    runtime: getDurationFormat(getRandomInteger(10, 150)),
+    releaseDate: generateDate(),
+    runtime: getRandomInteger(10, 150),
     country: `USA`,
     genres: generateGenres(),
     comments: createComments(),
     isFavorite: !!getRandomInteger(0, 1),
-    isWatched: !!getRandomInteger(0, 1),
+    isWatched: isWatchedFilm,
+    watchingDate: watchingFilmDate,
     isWatchlist: !!getRandomInteger(0, 1)
   };
 };

@@ -1,19 +1,5 @@
 import AbstractView from './abstract';
-
-const createProfileRating = (filmsCards) => {
-  const watchedFilmsCount = filmsCards.filter((filmCard) => filmCard.isWatched).length;
-
-  switch (true) {
-    case (watchedFilmsCount >= 1 && watchedFilmsCount <= 10):
-      return `novice`;
-    case (watchedFilmsCount >= 11 && watchedFilmsCount <= 20):
-      return `fan`;
-    case (watchedFilmsCount >= 21):
-      return `movie buff`;
-    default:
-      return ``;
-  }
-};
+import {getProfileRating} from '../utils/common';
 
 export default class UserRank extends AbstractView {
   constructor(filmsCards) {
@@ -22,7 +8,7 @@ export default class UserRank extends AbstractView {
   }
 
   _createUserRankTemplate(filmsCards) {
-    const profileRating = createProfileRating(filmsCards);
+    const profileRating = getProfileRating(filmsCards);
 
     return (
       `<section class="header__profile profile">

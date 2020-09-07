@@ -68,19 +68,19 @@ export const remove = (component) => {
   component.removeElement();
 };
 
-export const append = (parent, child) => {
-  if (parent instanceof Abstract) {
-    parent = parent.getElement();
-  }
-
-  if (child instanceof Abstract) {
-    child = child.getElement();
-  }
-
-  if (parent === null || child === null) {
-    throw new Error(`Can't append unexisting elements`);
-  }
-
-
-  parent.appendChild(child);
-};
+// export const append = (parent, child) => {
+//   if (parent instanceof Abstract) {
+//     parent = parent.getElement();
+//   }
+//
+//   if (child instanceof Abstract) {
+//     child = child.getElement();
+//   }
+//
+//   if (parent === null || child === null) {
+//     throw new Error(`Can't append unexisting elements`);
+//   }
+//
+//
+//   parent.appendChild(child);
+// };
