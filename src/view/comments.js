@@ -1,4 +1,5 @@
 import he from 'he';
+import {getCommentDate} from '../utils/common';
 import SmartView from './smart';
 
 export default class Comments extends SmartView {
@@ -10,15 +11,17 @@ export default class Comments extends SmartView {
   }
 
   getTemplate() {
+    const commentDate = getCommentDate(new Date(this._comment.date));
+
     return `<li class="film-details__comment" id="${this._comment.id}">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${this._comment.emoji}.png" width="55" height="55" alt="emoji-${this._comment.emoji}">
+        <img src="./images/emoji/${this._comment.emotion}.png" width="55" height="55" alt="emoji-${this._comment.emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${he.encode(this._comment.text)}</p>
+        <p class="film-details__comment-text">${he.encode(this._comment.comment)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${this._comment.author}</span>
-          <span class="film-details__comment-day">${this._comment.date}</span>
+          <span class="film-details__comment-day">${commentDate}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>

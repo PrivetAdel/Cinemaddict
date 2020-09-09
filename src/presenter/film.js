@@ -3,7 +3,8 @@ import FilmDetalisView from '../view/film-details-popup';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
-import {Mode, UserAction, UpdateType} from '../const';
+import {AUTHORIZATION, END_POINT, Mode, UserAction, UpdateType} from '../const';
+import Api from '../api';
 
 export default class Film {
   constructor(filmsListContainer, changeData, changeMode, filmsModel) {
@@ -11,6 +12,7 @@ export default class Film {
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._filmsModel = filmsModel;
+    this._api = new Api(END_POINT, AUTHORIZATION);
     this._commentsModel = new CommentsModel();
 
     this._filmComponent = null;
@@ -66,7 +68,6 @@ export default class Film {
 
   destroy() {
     remove(this._filmComponent);
-    this._destroyDetailsComponent();
   }
 
   resetView() {
@@ -88,7 +89,9 @@ export default class Film {
     this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
 
     this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel);
-    this._commentListPresenter.init(this._film.comments);
+
+    this._api.getComments(this._film.id)
+      .then((comments) => this._commentListPresenter.init(comments));
   }
 
   _openDetailsCard() {
