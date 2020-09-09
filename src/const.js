@@ -1,3 +1,9 @@
+export const BAR_HEIGHT = 50;
+export const CARDS_COUNT_PER_STEP = 5;
+export const EXTRA_CARDS_COUNT = 2;
+export const AUTHORIZATION = `Basic dfiufoguhoikhb8746rfdvgc`;
+export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
+
 export const Mode = {
   DEFAULT: `DEFAULT`,
   POPUP: `POPUP`
@@ -18,7 +24,8 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {
@@ -40,10 +47,6 @@ export const StatisticPeriod = {
   MONTH: `month`,
   YEAR: `year`
 };
-
-export const BAR_HEIGHT = 50;
-export const CARDS_COUNT_PER_STEP = 5;
-export const EXTRA_CARDS_COUNT = 2;
 
 export const FilmsType = {
   ALL: `ALL`,

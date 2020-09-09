@@ -7,31 +7,38 @@ import StatisticsPresenter from './presenter/statistics';
 import FilmsModel from './model/films';
 import FilterModel from './model/filter';
 import PageModeModel from './model/page-mode';
-import {generateFilmCard} from './mock/film-card';
+import {AUTHORIZATION, END_POINT, UpdateType} from './const';
 import {render} from './utils/render';
-
-const CARDS_COUNT = 22;
-
-const filmsCards = new Array(CARDS_COUNT).fill(``).map(generateFilmCard);
-
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(filmsCards);
-const filterModel = new FilterModel();
-const pageModeModel = new PageModeModel();
+import Api from './api';
 
 const mainHeaderElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 const footerStatistics = document.querySelector(`.footer__statistics`);
 
-render(mainHeaderElement, new UserRankView(filmsCards));
+const api = new Api(END_POINT, AUTHORIZATION);
+
+const filmsModel = new FilmsModel();
+const filterModel = new FilterModel();
+const pageModeModel = new PageModeModel();
+
 render(mainElement, new FilmsView());
 
 const filmsElement = mainElement.querySelector(`.films`);
-const filmListPresenter = new FilmListPresenter(filmsElement, filmsModel, filterModel);
+const filmListPresenter = new FilmListPresenter(filmsElement, filmsModel, filterModel, api);
 const statisticsPresenter = new StatisticsPresenter(mainElement, filmsModel);
 const menuPresenter = new MenuPresenter(mainElement, filterModel, filmsModel, filmListPresenter, statisticsPresenter, pageModeModel);
 
 menuPresenter.init();
 filmListPresenter.init();
 
-render(footerStatistics, new MoviesCountView(filmsCards.length));
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+    render(mainHeaderElement, new UserRankView(films));
+    render(footerStatistics, new MoviesCountView(films.length));
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+    // render(mainHeaderElement, new UserRankView(films));
+    // render(footerStatistics, new MoviesCountView(films.length));
+  });
