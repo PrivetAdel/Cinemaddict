@@ -39,6 +39,4 @@ api.getFilms()
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
-    // render(mainHeaderElement, new UserRankView(films));
-    // render(footerStatistics, new MoviesCountView(films.length));
   });

@@ -12,6 +12,11 @@ const generateDescriptionTemplate = (description) => {
   }
 };
 
+const generateGenreTemplate = (genres) => {
+  const [mainGenre] = genres;
+  return genres.length > 0 ? mainGenre : ``;
+};
+
 export default class FilmCard extends AbstractView {
   constructor(film) {
     super();
@@ -28,6 +33,7 @@ export default class FilmCard extends AbstractView {
     const descriptionTemplate = generateDescriptionTemplate(description);
     const releaseDateTemplate = getReleaseDate(releaseDate);
     const runtimeTemplate = getDurationFormat(runtime);
+    const genreTemplate = generateGenreTemplate(genres);
 
     const favoriteClassName = isFavorite ? `film-card__controls-item--active` : ``;
     const watchedClassName = isWatched ? `film-card__controls-item--active` : ``;
@@ -40,7 +46,7 @@ export default class FilmCard extends AbstractView {
         <p class="film-card__info">
           <span class="film-card__year">${releaseDateTemplate}</span>
           <span class="film-card__duration">${runtimeTemplate}</span>
-          <span class="film-card__genre">${genres[0]}</span>
+          <span class="film-card__genre">${genreTemplate}</span>
         </p>
         <img src="./${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${descriptionTemplate}</p>

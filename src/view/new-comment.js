@@ -1,5 +1,4 @@
 import SmartView from './smart';
-import {generateId, getCommentDate} from '../utils/common';
 
 export default class NewComment extends SmartView {
   constructor(film) {
@@ -15,10 +14,10 @@ export default class NewComment extends SmartView {
   }
 
   _createCommentsSectionTemplate() {
-    const {emoji} = this._data;
+    const {emotion} = this._data;
     return `<div class="film-details__new-comment">
         <div class="film-details__add-emoji-label">
-          ${emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : ``}
+          ${emotion ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : ``}
         </div>
 
         <label class="film-details__comment-label">
@@ -26,22 +25,22 @@ export default class NewComment extends SmartView {
         </label>
 
         <div class="film-details__emoji-list">
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emoji === `smile` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emotion === `smile` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-smile">
             <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emoji === `sleeping` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emotion === `sleeping` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-sleeping">
             <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emoji === `puke` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emotion === `puke` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-puke">
             <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emoji === `angry` ? `checked` : ``}>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emotion === `angry` ? `checked` : ``}>
           <label class="film-details__emoji-label" for="emoji-angry">
             <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
           </label>
@@ -58,11 +57,36 @@ export default class NewComment extends SmartView {
         {},
         this._data,
         {
-          id: generateId(),
-          author: `Privet Adel`,
-          date: getCommentDate(new Date())
+          date: new Date().toISOString()
         }
     );
+  }
+
+  getTextareaErrorColor() {
+    this.getElement().querySelector(`.film-details__comment-input`).style.borderColor = `red`;
+  }
+
+  getEmojiLabelErrorColor() {
+    this.getElement().querySelector(`.film-details__add-emoji-label`).style.borderColor = `red`;
+  }
+
+  getBorderColor() {
+    this.getElement().querySelector(`.film-details__comment-input`).style.borderColor = `#979797`;
+    this.getElement().querySelector(`.film-details__add-emoji-label`).style.borderColor = `#979797`;
+  }
+
+  disabledNewCommentForm() {
+    this.getElement().querySelector(`.film-details__comment-input`).disabled = true;
+    this.getElement().querySelectorAll(`.film-details__emoji-item`).forEach(function (item) {
+      item.disabled = true;
+    });
+  }
+
+  deployNewCommentForm() {
+    this.getElement().querySelector(`.film-details__comment-input`).disabled = false;
+    this.getElement().querySelectorAll(`.film-details__emoji-item`).forEach(function (item) {
+      item.disabled = false;
+    });
   }
 
   restoreHandlers() {
@@ -78,14 +102,14 @@ export default class NewComment extends SmartView {
   _commentInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      text: evt.target.value
+      comment: evt.target.value
     }, true);
   }
 
   _emojiClickHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      emoji: evt.target.value
+      emotion: evt.target.value
     });
   }
 

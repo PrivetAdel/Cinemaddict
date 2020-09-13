@@ -97,13 +97,11 @@ export default class FilmList {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM_CARD:
+      case UserAction.ADD_COMMENT:
+      case UserAction.DELETE_COMMENT:
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilmCard(updateType, response);
         });
-        break;
-      case UserAction.ADD_COMMENT:
-      case UserAction.DELETE_COMMENT:
-        this._filmsModel.updateFilmCard(updateType, update);
         break;
     }
   }

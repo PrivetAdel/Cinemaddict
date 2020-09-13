@@ -1,4 +1,4 @@
-import SmartView from './smart';
+import AbstractView from './abstract';
 import {getReleaseDate, getDurationFormat} from '../utils/common';
 
 const createGenresTemplate = (genres) => {
@@ -8,15 +8,16 @@ const createGenresTemplate = (genres) => {
   </td>`;
 };
 
-export default class FilmDetalis extends SmartView {
+export default class FilmDetalis extends AbstractView {
   constructor(film) {
     super();
-    this._data = FilmDetalis.parseFilmToData(film);
+    this._film = film;
 
     this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
-    this._changeControlHandler = this._changeControlHandler.bind(this);
 
-    this._setInnerHandlers();
+    this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   _createFilmDetalisPopupTemplate(film) {
@@ -109,12 +110,7 @@ export default class FilmDetalis extends SmartView {
   }
 
   getTemplate() {
-    return this._createFilmDetalisPopupTemplate(this._data);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+    return this._createFilmDetalisPopupTemplate(this._film);
   }
 
   _closeButtonClickHandler(evt) {
@@ -128,40 +124,36 @@ export default class FilmDetalis extends SmartView {
   }
 
   destroy() {
-    return FilmDetalis.parseDataToFilm(this._data);
+    return this._film;
   }
 
-  _changeControlHandler(evt) {
-    if (evt.target.classList.contains(`film-details__control-input`)) {
-      evt.preventDefault();
-
-      let update;
-      switch (evt.target.id) {
-        case `addwatchlist`:
-          update = {isWatchlist: !this._data.isWatchlist};
-          break;
-        case `watched`:
-          update = {isWatched: !this._data.isWatched};
-          break;
-        case `favorite`:
-          update = {isFavorite: !this._data.isFavorite};
-          break;
-      }
-      this.updateData(update, true);
-    }
+  _addToWatchListClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.addToWatchListClick();
   }
 
-  _setInnerHandlers() {
-    this.getElement().querySelector(`.film-details__controls`).addEventListener(`change`, this._changeControlHandler);
+  setAddtoWatchClickHandler(callback) {
+    this._callback.addToWatchListClick = callback;
+    this.getElement().querySelector(`#addwatchlist`).addEventListener(`click`, this._addToWatchListClickHandler);
   }
 
-  static parseFilmToData(film) {
-    return Object.assign({}, film);
+  _watchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchedClick();
   }
 
-  static parseDataToFilm(data) {
-    data = Object.assign({}, data);
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector(`#watched`).addEventListener(`click`, this._watchedClickHandler);
+  }
 
-    return data;
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`#favorite`).addEventListener(`click`, this._favoriteClickHandler);
   }
 }

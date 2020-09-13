@@ -1,8 +1,13 @@
 import he from 'he';
 import {getCommentDate} from '../utils/common';
-import SmartView from './smart';
+import AbstractView from './abstract';
 
-export default class Comments extends SmartView {
+const ButtonText = {
+  DELETING: `Deleting...`,
+  DELETE: `Delete`
+};
+
+export default class Comments extends AbstractView {
   constructor(comment) {
     super();
     this._comment = comment;
@@ -11,21 +16,30 @@ export default class Comments extends SmartView {
   }
 
   getTemplate() {
-    const commentDate = getCommentDate(new Date(this._comment.date));
+    const {date, id, emotion, comment, author} = this._comment;
+    const commentDate = getCommentDate(new Date(date));
 
-    return `<li class="film-details__comment" id="${this._comment.id}">
+    return `<li class="film-details__comment" id="${id}">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${this._comment.emotion}.png" width="55" height="55" alt="emoji-${this._comment.emotion}">
+        <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${he.encode(this._comment.comment)}</p>
+        <p class="film-details__comment-text">${he.encode(comment)}</p>
         <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${this._comment.author}</span>
+          <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${commentDate}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>
     </li>`;
+  }
+
+  setDeletingState() {
+    this.getElement().querySelector(`.film-details__comment-delete`).textContent = ButtonText.DELETING;
+  }
+
+  setDeleteState() {
+    this.getElement().querySelector(`.film-details__comment-delete`).textContent = ButtonText.DELETE;
   }
 
   _deleteButtonClickHandler(evt) {

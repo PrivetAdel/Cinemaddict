@@ -1,6 +1,12 @@
 import moment from 'moment';
+import {SHAKE_ANIMATION_TIMEOUT} from '../const';
 
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const shakeEffect = (element) => {
+  element.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  setTimeout(() => {
+    element.getElement().style.animation = ``;
+  }, SHAKE_ANIMATION_TIMEOUT);
+};
 
 export const getCurrentDate = () => {
   const currentDate = new Date();
