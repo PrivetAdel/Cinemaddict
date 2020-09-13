@@ -3,6 +3,7 @@ import FilmDetalisView from '../view/film-details-popup';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
+import {shakeEffect} from '../utils/common';
 import {AUTHORIZATION, END_POINT, Mode, UserAction, UpdateType} from '../const';
 import Api from '../api';
 
@@ -34,7 +35,9 @@ export default class Film {
 
   init(film) {
     this._film = film;
-    this._commentsModel.setComments(this._film.comments);
+
+    this._api.getComments(this._film)
+      .then((comments) => this._commentsModel.setComments(comments));
 
     const prevFilmComponent = this._filmComponent;
     const prevFilmDetalisComponent = this._filmDetalisComponent;
@@ -46,6 +49,10 @@ export default class Film {
     this._filmComponent.setAddtoWatchClickHandler(this._handleAddToWatchListClick);
     this._filmComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
+    this._filmDetalisComponent.setAddtoWatchClickHandler(this._handleAddToWatchListClick);
+    this._filmDetalisComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmDetalisComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
 
@@ -65,7 +72,6 @@ export default class Film {
     remove(prevFilmDetalisComponent);
   }
 
-
   destroy() {
     remove(this._filmComponent);
   }
@@ -74,6 +80,10 @@ export default class Film {
     if (this._mode !== Mode.DEFAULT) {
       this._closeDetailsCard();
     }
+  }
+
+  shakeCard() {
+    shakeEffect(this._filmDetalisComponent);
   }
 
   _destroyDetailsComponent() {
@@ -88,10 +98,8 @@ export default class Film {
     this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
     this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
 
-    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel);
-
-    this._api.getComments(this._film.id)
-      .then((comments) => this._commentListPresenter.init(comments));
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
+    this._commentListPresenter.init(this._commentsModel.getComments());
   }
 
   _openDetailsCard() {
@@ -105,7 +113,6 @@ export default class Film {
     }
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
-    this._filmDetalisComponent.restoreHandlers();
   }
 
   _closeDetailsCard() {

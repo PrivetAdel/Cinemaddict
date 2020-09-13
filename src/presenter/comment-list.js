@@ -2,15 +2,17 @@ import CommentPresenter from './comment';
 import NewCommentView from '../view/new-comment';
 import {UserAction, UpdateType} from '../const';
 import {render, remove} from '../utils/render';
+import {shakeEffect} from '../utils/common';
 
 export default class CommentList {
-  constructor(commentsContainer, newCommentConteiner, film, changeCommentData, commentsModel) {
+  constructor(commentsContainer, newCommentConteiner, film, changeCommentData, commentsModel, api) {
     this._commentsContainer = commentsContainer;
     this._newCommentConteiner = newCommentConteiner;
     this._film = film;
     this._commentsModel = commentsModel;
     this._changeCommentData = changeCommentData;
     this._commentPresenter = {};
+    this._api = api;
 
     this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
@@ -35,36 +37,62 @@ export default class CommentList {
   }
 
   _handleCommentDeleteClick(userAction, updateType, update) {
-    this._commentsModel.deleteComment(updateType, update);
-    this._commentPresenter[update.id].destroy();
+    this._commentPresenter[update.id].setDeletingState();
+    Object
+        .values(this._commentPresenter)
+        .forEach((presenter) => presenter.disabledButton());
 
-    this._changeCommentData(
-        userAction,
-        updateType,
-        Object.assign(
-            {},
-            this._film,
-            {
-              comments: this._commentsModel.getComments()
-            }
-        )
-    );
+    this._api.deleteComment(update).then(() => {
+      this._commentsModel.deleteComment(updateType, update);
+      this._changeCommentData(
+          userAction,
+          updateType,
+          this._film
+      );
+    }).catch(() => {
+      this._commentPresenter[update.id].shakeDeletingComment();
+      this._commentPresenter[update.id].setDeleteState();
+      Object
+          .values(this._commentPresenter)
+          .forEach((presenter) => presenter.deployButton());
+    });
   }
 
   _handleCommentSubmit() {
-    this._commentsModel.addComment(UpdateType.PATCH, this._newCommentComponent.getNewComment());
+    const newComment = this._newCommentComponent.getNewComment();
 
-    this._changeCommentData(
-        UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
-        Object.assign(
-            {},
-            this._film,
-            {
-              comments: this._commentsModel.getComments()
-            }
-        )
-    );
+    if (!(`emotion` in newComment) || !(`comment` in newComment)) {
+      shakeEffect(this._newCommentComponent);
+
+      if (!(`emotion` in newComment)) {
+        this._newCommentComponent.getEmojiLabelErrorColor();
+      }
+
+      if (!(`comment` in newComment)) {
+        this._newCommentComponent.getTextareaErrorColor();
+      }
+
+    } else {
+      this._newCommentComponent.getBorderColor();
+      this._newCommentComponent.disabledNewCommentForm();
+      this._api.addComment(this._film, newComment)
+        .then((response) => {
+          this._commentsModel.addComment(UpdateType.PATCH, response.comments);
+
+          this._changeCommentData(
+              UserAction.ADD_COMMENT,
+              UpdateType.PATCH,
+              this._film,
+              {
+                comments: this._commentsModel.getComments()
+              }
+          );
+        })
+        .catch(() => {
+          shakeEffect(this._newCommentComponent);
+          this._newCommentComponent.deployNewCommentForm();
+        });
+    }
   }
 
   _renderComment(comment) {
