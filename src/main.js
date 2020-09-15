@@ -4,19 +4,26 @@ import MoviesCountView from './view/movies-count';
 import FilmListPresenter from './presenter/film-list';
 import MenuPresenter from './presenter/menu';
 import StatisticsPresenter from './presenter/statistics';
+import Api from './api/index';
+import Store from './api/store';
+import Provider from './api/provider';
 import FilmsModel from './model/films';
 import FilterModel from './model/filter';
 import PageModeModel from './model/page-mode';
 import {AUTHORIZATION, END_POINT, UpdateType} from './const';
 import {render} from './utils/render';
-import Api from './api';
+
+const STORE_PREFIX = `cinemaddict-localstorage`;
+const STORE_VER = `12`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const mainHeaderElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 const footerStatistics = document.querySelector(`.footer__statistics`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
-
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
 const pageModeModel = new PageModeModel();
@@ -24,14 +31,14 @@ const pageModeModel = new PageModeModel();
 render(mainElement, new FilmsView());
 
 const filmsElement = mainElement.querySelector(`.films`);
-const filmListPresenter = new FilmListPresenter(filmsElement, filmsModel, filterModel, api);
+const filmListPresenter = new FilmListPresenter(filmsElement, filmsModel, filterModel, apiWithProvider);
 const statisticsPresenter = new StatisticsPresenter(mainElement, filmsModel);
 const menuPresenter = new MenuPresenter(mainElement, filterModel, filmsModel, filmListPresenter, statisticsPresenter, pageModeModel);
 
 menuPresenter.init();
 filmListPresenter.init();
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
     render(mainHeaderElement, new UserRankView(films));
@@ -40,3 +47,21 @@ api.getFilms()
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      console.log(`ServiceWorker available`); // eslint-disable-line
+    }).catch(() => {
+      console.error(`ServiceWorker isn't available`); // eslint-disable-line
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

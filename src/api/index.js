@@ -1,4 +1,4 @@
-import FilmsModel from './model/films';
+import FilmsModel from '../model/films';
 
 const Method = {
   GET: `GET`,
@@ -55,6 +55,16 @@ export default class Api {
     })
       .then(Api.toJSON)
       .then(FilmsModel.adaptToClient);
+  }
+
+  sync(data) {
+    return this._load({
+      url: `movies/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

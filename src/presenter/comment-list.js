@@ -18,8 +18,7 @@ export default class CommentList {
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
 
-  init(comments) {
-    this._commentsModel.setComments(comments);
+  init() {
     this._renderCommentsList();
 
     this._newCommentComponent = new NewCommentView();
