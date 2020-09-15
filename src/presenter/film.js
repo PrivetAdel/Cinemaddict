@@ -1,19 +1,19 @@
 import FilmCardView from '../view/film-card';
 import FilmDetalisView from '../view/film-details-popup';
+import NoComments from '../view/no-comments';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
 import {shakeEffect} from '../utils/common';
-import {AUTHORIZATION, END_POINT, Mode, UserAction, UpdateType} from '../const';
-import Api from '../api';
+import {Mode, UserAction, UpdateType} from '../const';
 
 export default class Film {
-  constructor(filmsListContainer, changeData, changeMode, filmsModel) {
+  constructor(filmsListContainer, changeData, changeMode, filmsModel, api) {
     this._filmsListContainer = filmsListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._filmsModel = filmsModel;
-    this._api = new Api(END_POINT, AUTHORIZATION);
+    this._api = api;
     this._commentsModel = new CommentsModel();
 
     this._filmComponent = null;
@@ -36,9 +36,6 @@ export default class Film {
   init(film) {
     this._film = film;
 
-    this._api.getComments(this._film)
-      .then((comments) => this._commentsModel.setComments(comments));
-
     const prevFilmComponent = this._filmComponent;
     const prevFilmDetalisComponent = this._filmDetalisComponent;
 
@@ -55,6 +52,9 @@ export default class Film {
     this._filmDetalisComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
+
+    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
+    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
 
     if (prevFilmComponent === null || !prevFilmDetalisComponent === null) {
       render(this._filmsListContainer, this._filmComponent);
@@ -94,14 +94,6 @@ export default class Film {
     remove(this._filmDetalisComponent);
   }
 
-  _initCommentSection() {
-    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
-    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
-
-    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
-    this._commentListPresenter.init(this._commentsModel.getComments());
-  }
-
   _openDetailsCard() {
     render(this._filmsListContainer, this._filmDetalisComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -109,10 +101,26 @@ export default class Film {
     this._mode = Mode.POPUP;
 
     if (!this._commentListPresenter) {
-      this._initCommentSection();
+      this._api.getComments(this._film)
+        .then((comments) => {
+          this._commentsModel.setComments(comments);
+
+          this._initCommentSection();
+        }).catch(() => {
+          this._initNoCommentsSection();
+        });
     }
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
+  }
+
+  _initNoCommentsSection() {
+    render(this._commentsConteiner, new NoComments());
+  }
+
+  _initCommentSection() {
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
+    this._commentListPresenter.init(this._commentsModel.getComments());
   }
 
   _closeDetailsCard() {
