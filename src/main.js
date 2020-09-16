@@ -10,12 +10,8 @@ import Provider from './api/provider';
 import FilmsModel from './model/films';
 import FilterModel from './model/filter';
 import PageModeModel from './model/page-mode';
-import {AUTHORIZATION, END_POINT, UpdateType} from './const';
+import {AUTHORIZATION, END_POINT, STORE_NAME, UpdateType} from './const';
 import {render} from './utils/render';
-
-const STORE_PREFIX = `cinemaddict-localstorage`;
-const STORE_VER = `12`;
-const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const mainHeaderElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);

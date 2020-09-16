@@ -3,7 +3,9 @@ export const CARDS_COUNT_PER_STEP = 5;
 export const EXTRA_CARDS_COUNT = 2;
 export const AUTHORIZATION = `Basic dfiufoguhoikhb8746rfdvgc`;
 export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
-export const SHAKE_ANIMATION_TIMEOUT = 600;
+const STORE_PREFIX = `cinemaddict-localstorage`;
+const STORE_VER = `12`;
+export const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 export const Mode = {
   DEFAULT: `DEFAULT`,
@@ -53,9 +55,4 @@ export const FilmsType = {
   ALL: `ALL`,
   RATED: `RATED`,
   COMMENTED: `COMMENTED`
-};
-
-export const State = {
-  SAVING: `SAVING`,
-  DELETING: `DELETING`
 };

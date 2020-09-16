@@ -61,7 +61,7 @@ export default class Film {
       return;
     }
 
-    if (prevFilmDetalisComponent !== null) {
+    if (this._mode === Mode.POPUP) {
       this._initCommentSection();
     }
 
@@ -126,8 +126,12 @@ export default class Film {
   _closeDetailsCard() {
     this._destroyDetailsComponent();
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    this._commentListPresenter.destroy();
-    this._commentListPresenter = null;
+
+    if (this._commentListPresenter) {
+      this._commentListPresenter.destroy();
+      this._commentListPresenter = null;
+    }
+
     this._mode = Mode.DEFAULT;
   }
 
