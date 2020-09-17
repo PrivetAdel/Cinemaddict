@@ -52,6 +52,11 @@ export default class NewComment extends SmartView {
     return this._createCommentsSectionTemplate(this._data);
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.getElement().addEventListener(`keydown`, this._commentSubmitHandler);
+  }
+
   getNewComment() {
     return Object.assign(
         {},
@@ -87,11 +92,6 @@ export default class NewComment extends SmartView {
     this.getElement().querySelectorAll(`.film-details__emoji-item`).forEach(function (item) {
       item.disabled = false;
     });
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.getElement().addEventListener(`keydown`, this._commentSubmitHandler);
   }
 
   _setInnerHandlers() {

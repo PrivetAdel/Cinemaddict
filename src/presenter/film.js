@@ -53,16 +53,19 @@ export default class Film {
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
 
-    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
-    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
+    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.form-details__bottom-container`);
 
     if (prevFilmComponent === null || !prevFilmDetalisComponent === null) {
       render(this._filmsListContainer, this._filmComponent);
       return;
     }
 
-    if (this._mode === Mode.POPUP) {
+    if (this._mode === Mode.POPUP && !this._noCommentsComponent) {
       this._initCommentSection();
+    }
+
+    if (this._mode === Mode.POPUP && !this._commentListPresenter) {
+      this._initNoCommentsSection();
     }
 
     replace(this._filmComponent, prevFilmComponent);
@@ -115,11 +118,12 @@ export default class Film {
   }
 
   _initNoCommentsSection() {
-    render(this._commentsConteiner, new NoComments());
+    this._noCommentsComponent = new NoComments();
+    render(this._commentsConteiner, this._noCommentsComponent);
   }
 
   _initCommentSection() {
-    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
     this._commentListPresenter.init(this._commentsModel.getComments());
   }
 
