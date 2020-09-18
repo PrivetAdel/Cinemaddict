@@ -4,7 +4,6 @@ import NoComments from '../view/no-comments';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
-import {shakeEffect} from '../utils/common';
 import {Mode, UserAction, UpdateType} from '../const';
 
 export default class Film {
@@ -27,10 +26,9 @@ export default class Film {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDetailsCloseClick = this._handleDetailsCloseClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-
     this._handleCommentListUpdate = this._handleCommentListUpdate.bind(this);
 
-    this._destroyCallback = null;
+    this._popapContainer = document.querySelector(`body`);
   }
 
   init(film) {
@@ -85,10 +83,6 @@ export default class Film {
     }
   }
 
-  shakeCard() {
-    shakeEffect(this._filmDetalisComponent);
-  }
-
   _destroyDetailsComponent() {
     const updateCard = this._filmDetalisComponent.destroy();
 
@@ -98,7 +92,7 @@ export default class Film {
   }
 
   _openDetailsCard() {
-    render(this._filmsListContainer, this._filmDetalisComponent);
+    render(this._popapContainer, this._filmDetalisComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.POPUP;

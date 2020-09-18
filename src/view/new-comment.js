@@ -7,7 +7,6 @@ export default class NewComment extends SmartView {
 
     this._commentInputHandler = this._commentInputHandler.bind(this);
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
-
     this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
 
     this._setInnerHandlers();

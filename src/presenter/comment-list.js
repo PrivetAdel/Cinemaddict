@@ -81,11 +81,11 @@ export default class CommentList {
       this._newCommentComponent.disabledNewCommentForm();
       this._api.addComment(this._film, newComment)
         .then((response) => {
-          this._commentsModel.addComment(UpdateType.PATCH, response.comments);
+          this._commentsModel.addComment(UpdateType.PATCH_PLUS, response.comments);
 
           this._changeCommentData(
               UserAction.ADD_COMMENT,
-              UpdateType.PATCH,
+              UpdateType.PATCH_PLUS,
               this._film,
               {
                 comments: this._commentsModel.getComments()

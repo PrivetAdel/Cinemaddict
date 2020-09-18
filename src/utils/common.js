@@ -86,14 +86,14 @@ export const getTopGenre = (films) => {
   return topGenre(genresObject, maxCount);
 };
 
-export const sortFilmDate = (filmA, filmB) => {
+export const sortFilmByDate = (filmA, filmB) => {
   return filmB.releaseDate.getFullYear() - filmA.releaseDate.getFullYear();
 };
 
-export const sortFilmRating = (filmA, filmB) => {
+export const sortFilmByRating = (filmA, filmB) => {
   return filmB.rating - filmA.rating;
 };
 
-// export const sortFilmCommentsCount = (filmA, filmB) => {
-//   return filmB.comments.length - filmA.comments.length;
-// };
+export const sortFilmByCommentsCount = (filmA, filmB) => {
+  return filmB.comments.length - filmA.comments.length;
+};
