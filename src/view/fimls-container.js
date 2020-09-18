@@ -1,6 +1,6 @@
 import AbstractView from './abstract';
 
-export default class FilmsList extends AbstractView {
+export default class FilmsContainer extends AbstractView {
   _createFilmsListTemplate() {
     return (
       `<section class="films-list">

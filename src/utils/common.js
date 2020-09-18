@@ -27,9 +27,9 @@ export const getDurationFormat = (minutes) => {
 export const getReleaseDate = (date, isFullDate = false) => {
   if (isFullDate) {
     return moment(date).format(`DD MMMM YYYY`);
-  } else {
-    return moment(date).format(`YYYY`);
   }
+
+  return moment(date).format(`YYYY`);
 };
 
 export const getCommentDate = (date) => {

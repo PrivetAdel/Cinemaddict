@@ -1,5 +1,5 @@
 import FilmCardView from '../view/film-card';
-import FilmDetalisView from '../view/film-details-popup';
+import FilmDetalisView from '../view/film-details';
 import NoComments from '../view/no-comments';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';

@@ -1,4 +1,4 @@
-import FilmsListView from '../view/fimls-list';
+import FilmsContainerView from '../view/fimls-container';
 import ShowMoreButtonView from '../view/show-more-button';
 import MostCommentedView from '../view/most-commented';
 import TopRatedView from '../view/top-rated';
@@ -12,18 +12,19 @@ import {CARDS_COUNT_PER_STEP, EXTRA_CARDS_COUNT, SortType, UpdateType, UserActio
 import {filter} from '../utils/filter';
 
 export default class FilmList {
-  constructor(filmsListContainer, filmsModel, filterModel, api) {
+  constructor(filmsSectionContainer, filmsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
-    this._filmsListContainer = filmsListContainer;
+    this._filmsSectionContainer = filmsSectionContainer;
     this._api = api;
     this._renderedFilmsCount = CARDS_COUNT_PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._filmPresenter = {};
     this._ratedFilmPresenter = {};
     this._commentedFilmPresenter = {};
+    this._isLoading = true;
 
-    this._filmsListComponent = new FilmsListView();
+    this._filmsContainerComponent = new FilmsContainerView();
     this._topRatedComponent = new TopRatedView();
     this._mostCommentedComponent = new MostCommentedView();
     this._noFilmsComponent = new NoFilmsView();
@@ -39,11 +40,11 @@ export default class FilmList {
   }
 
   init() {
-    this._filmsListElement = this._filmsListComponent.getElement().querySelector(`.films-list__container`);
+    this._filmsListElement = this._filmsContainerComponent.getElement().querySelector(`.films-list__container`);
     this._topRatedFilmsListElement = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
     this._mostCommentedFilmsListElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
 
-    render(this._filmsListContainer, this._filmsListComponent);
+    render(this._filmsSectionContainer, this._filmsContainerComponent);
 
     this._renderFilmList();
 
@@ -54,7 +55,7 @@ export default class FilmList {
   destroy() {
     this._clearFilmList({resetRenderedFilmsCount: true, resetSortType: true});
 
-    remove(this._filmsListComponent);
+    remove(this._filmsContainerComponent);
     remove(this._topRatedComponent);
     remove(this._mostCommentedComponent);
 
@@ -63,7 +64,7 @@ export default class FilmList {
   }
 
   _renderLoading() {
-    render(this._filmsListContainer, this._loadingComponent);
+    render(this._filmsContainerComponent, this._loadingComponent);
   }
 
   _getFilms() {
@@ -95,7 +96,7 @@ export default class FilmList {
       return;
     }
 
-    render(this._filmsListContainer, this._topRatedComponent);
+    render(this._filmsSectionContainer, this._topRatedComponent);
 
     this._renderFilms(this._topRatedFilmsListElement, this._filmsTopRated, FilmsType.RATED);
   }
@@ -119,7 +120,7 @@ export default class FilmList {
       return;
     }
 
-    render(this._filmsListContainer, this._mostCommentedComponent);
+    render(this._filmsSectionContainer, this._mostCommentedComponent);
 
     this._renderFilms(this._mostCommentedFilmsListElement, this._filmsMostCommented, FilmsType.COMMENTED);
   }
@@ -215,7 +216,7 @@ export default class FilmList {
 
     this._sortComponent = new SortView(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handlerSortTypeChange);
-    render(this._filmsListContainer, this._sortComponent, `before`);
+    render(this._filmsSectionContainer, this._sortComponent, `before`);
   }
 
   _renderFilm(container, film, type) {
@@ -240,7 +241,7 @@ export default class FilmList {
   }
 
   _renderNoFilms() {
-    render(this._filmsListComponent, this._noFilmsComponent);
+    render(this._filmsContainerComponent, this._noFilmsComponent);
   }
 
   _handlerShowMoreButtonClick() {
@@ -266,7 +267,7 @@ export default class FilmList {
 
     this._showMoreButtonComponent.setShowMoreButtonClickHandler(this._handlerShowMoreButtonClick);
 
-    render(this._filmsListComponent, this._showMoreButtonComponent);
+    render(this._filmsContainerComponent, this._showMoreButtonComponent);
   }
 
   _clearFilmList({resetRenderedFilmsCount = false, resetSortType = false} = {}) {

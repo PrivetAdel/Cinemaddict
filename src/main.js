@@ -9,7 +9,7 @@ import Store from './api/store';
 import Provider from './api/provider';
 import FilmsModel from './model/films';
 import FilterModel from './model/filter';
-import PageModeModel from './model/page-mode';
+import PageModel from './model/page';
 import {AUTHORIZATION, END_POINT, STORE_NAME, UpdateType} from './const';
 import {render} from './utils/render';
 
@@ -22,7 +22,7 @@ const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
-const pageModeModel = new PageModeModel();
+const pageModeModel = new PageModel();
 
 render(mainElement, new FilmsView());
 

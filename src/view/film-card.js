@@ -7,9 +7,9 @@ const generateDescriptionTemplate = (description) => {
   if (description.length > MAX_SIMBOLS_COUNT) {
     const shortDescription = description.slice(0, MAX_SIMBOLS_COUNT - 1);
     return `${shortDescription}...`;
-  } else {
-    return description;
   }
+
+  return description;
 };
 
 const generateGenreTemplate = (genres) => {
