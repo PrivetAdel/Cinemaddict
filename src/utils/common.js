@@ -1,5 +1,6 @@
 import moment from 'moment';
-import {SHAKE_ANIMATION_TIMEOUT} from '../const';
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const shakeEffect = (element) => {
   element.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
@@ -33,24 +34,6 @@ export const getReleaseDate = (date, isFullDate = false) => {
 
 export const getCommentDate = (date) => {
   return moment(date).fromNow();
-};
-
-export const getRandomInteger = (min, max) => {
-  return Math.floor((Math.random() * (max + 1 - min)) + min);
-};
-
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
-export const getRandomArray = (array) => {
-  const items = getRandomInteger(1, 5);
-  const newArray = shuffleArray(array.slice()).slice(0, items);
-  return newArray;
 };
 
 export const getWatchedFilmsCount = (films) => {
@@ -103,14 +86,14 @@ export const getTopGenre = (films) => {
   return topGenre(genresObject, maxCount);
 };
 
-export const sortFilmDate = (filmA, filmB) => {
+export const sortFilmByDate = (filmA, filmB) => {
   return filmB.releaseDate.getFullYear() - filmA.releaseDate.getFullYear();
 };
 
-export const sortFilmRating = (filmA, filmB) => {
+export const sortFilmByRating = (filmA, filmB) => {
   return filmB.rating - filmA.rating;
 };
 
-export const sortFilmCommentsCount = (filmA, filmB) => {
+export const sortFilmByCommentsCount = (filmA, filmB) => {
   return filmB.comments.length - filmA.comments.length;
 };

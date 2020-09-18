@@ -1,13 +1,13 @@
 import CommentPresenter from './comment';
 import NewCommentView from '../view/new-comment';
+import CommentsWrapView from '../view/comments-wrap';
 import {UserAction, UpdateType} from '../const';
 import {render, remove} from '../utils/render';
 import {shakeEffect} from '../utils/common';
 
 export default class CommentList {
-  constructor(commentsContainer, newCommentConteiner, film, changeCommentData, commentsModel, api) {
+  constructor(commentsContainer, film, changeCommentData, commentsModel, api) {
     this._commentsContainer = commentsContainer;
-    this._newCommentConteiner = newCommentConteiner;
     this._film = film;
     this._commentsModel = commentsModel;
     this._changeCommentData = changeCommentData;
@@ -19,10 +19,15 @@ export default class CommentList {
   }
 
   init() {
+    this._commentsWrapComponent = new CommentsWrapView(this._commentsModel.getComments());
+    render(this._commentsContainer, this._commentsWrapComponent);
+
+    this._commentListConteiner = this._commentsWrapComponent.getElement().querySelector(`.film-details__comments-list`);
+
     this._renderCommentsList();
 
     this._newCommentComponent = new NewCommentView();
-    render(this._newCommentConteiner, this._newCommentComponent);
+    render(this._commentListConteiner, this._newCommentComponent);
     this._newCommentComponent.setSubmitCommentHandler(this._handleCommentSubmit);
   }
 
@@ -76,11 +81,11 @@ export default class CommentList {
       this._newCommentComponent.disabledNewCommentForm();
       this._api.addComment(this._film, newComment)
         .then((response) => {
-          this._commentsModel.addComment(UpdateType.PATCH, response.comments);
+          this._commentsModel.addComment(UpdateType.PATCH_PLUS, response.comments);
 
           this._changeCommentData(
               UserAction.ADD_COMMENT,
-              UpdateType.PATCH,
+              UpdateType.PATCH_PLUS,
               this._film,
               {
                 comments: this._commentsModel.getComments()
@@ -96,7 +101,7 @@ export default class CommentList {
 
   _renderComment(comment) {
     this._comment = comment;
-    const commentPresenter = new CommentPresenter(this._commentsContainer, this._handleCommentDeleteClick);
+    const commentPresenter = new CommentPresenter(this._commentListConteiner, this._handleCommentDeleteClick);
     commentPresenter.init(this._comment);
     this._commentPresenter[this._comment.id] = commentPresenter;
   }

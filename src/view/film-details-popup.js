@@ -21,7 +21,7 @@ export default class FilmDetalis extends AbstractView {
   }
 
   _createFilmDetalisPopupTemplate(film) {
-    const {title, description, comments, poster, rating, runtime, releaseDate, genres, director, writers, actors, country, isWatchlist, isWatched, isFavorite} = film;
+    const {title, description, poster, rating, runtime, releaseDate, genres, director, writers, actors, country, isWatchlist, isWatched, isFavorite} = film;
 
     const releaseDateTemplate = getReleaseDate(releaseDate, true);
     const genresTemplate = createGenresTemplate(genres);
@@ -99,10 +99,6 @@ export default class FilmDetalis extends AbstractView {
           </div>
 
           <div class="form-details__bottom-container">
-            <section class="film-details__comments-wrap">
-              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-              <ul class="film-details__comments-list"></ul>
-            </section>
           </div>
         </form>
       </section>`
@@ -113,6 +109,10 @@ export default class FilmDetalis extends AbstractView {
     return this._createFilmDetalisPopupTemplate(this._film);
   }
 
+  destroy() {
+    return this._film;
+  }
+
   _closeButtonClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeButtonClick();
@@ -121,10 +121,6 @@ export default class FilmDetalis extends AbstractView {
   setCloseButtonClickHandler(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
-  }
-
-  destroy() {
-    return this._film;
   }
 
   _addToWatchListClickHandler(evt) {

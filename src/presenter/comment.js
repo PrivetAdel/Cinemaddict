@@ -46,7 +46,7 @@ export default class Comment {
   _handleCommentDeleteClick() {
     this._removeData(
         UserAction.DELETE_COMMENT,
-        UpdateType.PATCH,
+        UpdateType.PATCH_PLUS,
         this._comment
     );
   }

@@ -4,7 +4,6 @@ import NoComments from '../view/no-comments';
 import CommentsModel from '../model/comments';
 import CommentListPresenter from './comment-list';
 import {render, replace, remove} from '../utils/render';
-import {shakeEffect} from '../utils/common';
 import {Mode, UserAction, UpdateType} from '../const';
 
 export default class Film {
@@ -27,10 +26,9 @@ export default class Film {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDetailsCloseClick = this._handleDetailsCloseClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-
     this._handleCommentListUpdate = this._handleCommentListUpdate.bind(this);
 
-    this._destroyCallback = null;
+    this._popapContainer = document.querySelector(`body`);
   }
 
   init(film) {
@@ -53,16 +51,19 @@ export default class Film {
 
     this._filmDetalisComponent.setCloseButtonClickHandler(this._handleDetailsCloseClick);
 
-    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-list`);
-    this._newCommentConteiner = this._filmDetalisComponent.getElement().querySelector(`.film-details__comments-wrap`);
+    this._commentsConteiner = this._filmDetalisComponent.getElement().querySelector(`.form-details__bottom-container`);
 
     if (prevFilmComponent === null || !prevFilmDetalisComponent === null) {
       render(this._filmsListContainer, this._filmComponent);
       return;
     }
 
-    if (prevFilmDetalisComponent !== null) {
+    if (this._mode === Mode.POPUP && !this._noCommentsComponent) {
       this._initCommentSection();
+    }
+
+    if (this._mode === Mode.POPUP && !this._commentListPresenter) {
+      this._initNoCommentsSection();
     }
 
     replace(this._filmComponent, prevFilmComponent);
@@ -82,10 +83,6 @@ export default class Film {
     }
   }
 
-  shakeCard() {
-    shakeEffect(this._filmDetalisComponent);
-  }
-
   _destroyDetailsComponent() {
     const updateCard = this._filmDetalisComponent.destroy();
 
@@ -95,7 +92,7 @@ export default class Film {
   }
 
   _openDetailsCard() {
-    render(this._filmsListContainer, this._filmDetalisComponent);
+    render(this._popapContainer, this._filmDetalisComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.POPUP;
@@ -115,19 +112,24 @@ export default class Film {
   }
 
   _initNoCommentsSection() {
-    render(this._commentsConteiner, new NoComments());
+    this._noCommentsComponent = new NoComments();
+    render(this._commentsConteiner, this._noCommentsComponent);
   }
 
   _initCommentSection() {
-    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._newCommentConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
+    this._commentListPresenter = new CommentListPresenter(this._commentsConteiner, this._film, this._handleCommentListUpdate, this._commentsModel, this._api);
     this._commentListPresenter.init(this._commentsModel.getComments());
   }
 
   _closeDetailsCard() {
     this._destroyDetailsComponent();
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    this._commentListPresenter.destroy();
-    this._commentListPresenter = null;
+
+    if (this._commentListPresenter) {
+      this._commentListPresenter.destroy();
+      this._commentListPresenter = null;
+    }
+
     this._mode = Mode.DEFAULT;
   }
 
