@@ -1,4 +1,4 @@
-# Личный проект [«Киноман»](https://privetadel.github.io/Cinemaddict/) — сервис для фанатов большого кино
+# Личный проект [«Киноман»](https://privetadel.github.io/Cinemaddict/)
 
 на интенсивном онлайн‑курсе «[JavaScript. Архитектура клиентских приложений, уровень 2](https://htmlacademy.ru/intensive/ecmascript)» от [HTML Academy](https://htmlacademy.ru).
 
